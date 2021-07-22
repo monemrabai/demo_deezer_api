@@ -1,0 +1,9 @@
+knpu_oauth2_client:
+    clients:
+        deezer:
+            type: github
+            client_id: '%env(DEEZER_ID)%'
+            client_secret: '%env(DEEZER_SECRET)%'
+            redirect_route: oauth_check
+            redirect_params:
+                service: deezer
