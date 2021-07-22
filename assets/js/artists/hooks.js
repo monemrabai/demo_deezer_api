@@ -12,11 +12,12 @@ export function usePaginatedFetch(url) {
             }
         })
         const responseData = await response.json()
+
         if(response.ok) {
             setItems(items => [...items, ...responseData['hydra:member']])
-            setCount(responseData['hydra.totalItems'])
-            if (responseData['hydra.view'] && responseData['hydra.view']['hydra:next']) {
-                setNext(responseData['hydra.view']['hydra:next'])
+            setCount(responseData['hydra:totalItems'])
+            if (responseData['hydra:view'] && responseData['hydra:view']['hydra:next']) {
+                setNext(responseData['hydra:view']['hydra:next'])
             }else{
                setNext(null)
             }

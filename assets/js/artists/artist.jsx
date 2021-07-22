@@ -3,38 +3,42 @@ import React, {useEffect} from 'react'
 import {usePaginatedFetch} from "./hooks";
 import {Icon} from "../components/Icon";
 
-function artists() {
-    const {items: articles, load, loading, count, hasMore} = usePaginatedFetch('/api/artists')
+function Artists() {
+    const {items: artists, load, loading, count, hasMore} = usePaginatedFetch('/api/artists')
+
     useEffect(() => {
         load()
     }, [])
 
-    return <div>
-        {loading && 'Chargement...'}
+    const element = (<div>
         <Title count={count}/>
-        {articles.map(a => <Article key={a.id} article={a} /> )}
-        {hasMore && <button disabled={loading} className="btn btn-primary" onClick={load}>Charger plus d'artiste</button> }
-    </div>
+        {artists.map(a => <Artist key={a.id} artist={a} /> )}
+        {hasMore && <button disabled={loading} className="btn btn-primary" onClick={load}>Charger plus</button> }
+    </div>)
+    return element
 }
 
 const Artist = React.memo(({artist}) => {
     return <div className="row artist-detail">
-        <h4>
+        <h4 className="col-sm-3">
             <strong>{artist.name}</strong>
-            nombre de fans <strong>{artist.nbFan}</strong>
         </h4>
+        <div className="col-sm-9">
+            nombre de fans <p><strong> {artist.nbFan}</strong></p>
+        </div>
+
     </div>
 })
 
 function Title({count}) {
     return <h3>
         <Icon icon="artists"/>
-        {count} Artiste{count > 1 ? 's' : ''}</h3>
+        {count} Artiste{count > 1 ? 's' : ''}
+    </h3>
 }
 
 class ArtistsElement extends HTMLElement {
     connectedCallback() {
-        const artist = parseInt(this.dataset.artist, 10)
         render(<Artists/>, this)
     }
 
@@ -44,4 +48,4 @@ class ArtistsElement extends HTMLElement {
     }
 }
 
-customElements.define('artists', ArtistsElement)
+customElements.define('artists-element', ArtistsElement)

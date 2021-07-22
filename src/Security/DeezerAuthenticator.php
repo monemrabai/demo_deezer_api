@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
+use League\OAuth2\Client\Provider\DeezerResourceOwner;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -83,18 +84,28 @@ class DeezerAuthenticator extends SocialAuthenticator
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        $response = HttpClient::create()->request(
-            'GET',
-            'https://api.deezer.com/user/me',
-            [
-                'headers' => [
-                    'authorization' => "token {$credentials->getToken()}"
-                ]
-            ]
+        $deezerUser = new DeezerResourceOwner();
 
-        );
+        if($credentials !== false) {
+            try {
+                $response = HttpClient::create()->request(
+                    'GET',
+                    'https://api.deezer.com/user/me',
+                    [
+                        'headers' => [
+                            'authorization' => "token {$credentials->getToken()}"
+                        ]
+                    ]
 
-        $deezerUser = json_decode($response->getContent());
+                );
+
+                $deezerUser = json_decode($response->getContent());
+            } catch (\Exception $e) {
+               $deezerUser = new DeezerResourceOwner();
+            }
+
+
+        }
 
         return $this->userRepository->findOrCreateFromOauth($deezerUser);
     }
